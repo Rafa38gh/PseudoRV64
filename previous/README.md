@@ -1,11 +1,9 @@
-# Frontend das etapas anteriores
+# Arquivos das etapas anteriores
 
-Todos os módulos anteriores ficam diretamente nesta pasta, incluindo lexer, parser, AST, símbolos, nomes, tipos e fluxo.
+Copie aqui os módulos Python e os pacotes auxiliares da entrega anterior. Inclua lexer, parser, AST, símbolos, resolução de nomes e verificação de tipos. Os arquivos fornecidos nesta pasta preservam os contratos e contêm placeholders para as implementações que cada grupo deve recuperar.
 
-Para recuperar a Semântica 2:
+Os imports antigos podem continuar iguais, como `from ast_nodes import Program`. Execute o projeto pelo `runner.py` da raiz do starter. 
 
-1. Copie os módulos e pacotes auxiliares que estavam em `previous/` da Semântica 2 para esta pasta.
-2. Copie os módulos e pacotes auxiliares da raiz da Semântica 2 para esta mesma pasta. Em conflitos, prevalece essa versão mais recente, incluindo `semantic.py` e `semantic_errors.py`.
-3. Preserve os carregadores `load_previous.py` fornecidos nesta etapa. Não copie a pasta `previous/` como subdiretório, arquivos Git, ambientes virtuais ou caches.
+As versões antigas de `semantic.py`, `runner.py` e `semantic_errors.py` também podem ser copiadas junto com os demais arquivos. A nova etapa utiliza as versões atualizadas que ficam na raiz. O contrato de diagnósticos da raiz mantém as categorias anteriores e acrescenta as duas categorias de fluxo.
 
-Os imports continuam usando nomes como `ast_nodes`, `symbols` e `semantic`. Execute o backend pelo runner da raiz do starter. Não altere suas classes nem os contratos das etapas anteriores.
+Copie os arquivos do projeto, sem o diretório `.git`, ambientes virtuais ou caches. Preserve os nomes e campos dos projetos originais.
