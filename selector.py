@@ -15,56 +15,28 @@ class Selector:
         self._visit(expr, table)
         return table
     
-    def _visit(self, node, table):
-        """Pós-ordem: calcula os filhos e checa as regras do nó"""
-        for child in children(node):
-            self._visit(child, table)
-
-        for rule in self.rules:
-            needs = self._match(rule.pattern, node)
-            if needs is None:
-                continue
-
-            # Custo total
-            total = rule.cost
-            for subnode, result_class in needs:
-                sub_choice = table.lookup(subnode, result_class)
-
-                if sub_choice is None:
-                    break
-                total += sub_choice.cost
-            else:
-                current = table.lookup(node, rule.result)
-                if current is None or total < current.cost:
-                    table.put(node, rule.result, Choice(total, rule, tuple(needs)))
-
     def _match(self, pattern, node):
-        """Devolve a lista ou None"""
-        # Tipo
-        if pattern.kind is not None and not isinstance(node, pattern.kind):
+        """Devolve a lista [(subnó, classe)] exigida ou None"""
+        if pattern.kind is not None and not isinstance(node, pattern.kind):     # Tipo do nó
             return None
         
-        #Operador
-        if pattern.operator is not None:
+        if pattern.operator is not None:                                        # Operador
             if getattr(node, "operator", None) != pattern.operator:
                 return None
-        
-        #Predicado sobre a subárvore
-        if pattern.predicate is not None and not pattern.predicate(node):
+            
+        if pattern.predicate is not None and not pattern.predicate(node):       # Predicado
             return None
         
-        # Predicado sem filhos
-        if not pattern.children and pattern.predicate is not None:
+        if not pattern.children and pattern.predicate is not None:              # Predicado sem filhos
             return []
         
         node_children = children(node)
 
-        if len(pattern.children) == 1 and isinstance(pattern.children[0], Args):
+        if len(pattern.children) == 1 and isinstance(pattern.children[0], Args): # Argumentos de chamada
             result_class = pattern.children[0].result
-            
-            return [{arg, result_class} for arg in node_children]
+            return [(arg, result_class) for arg in node_children]
         
-        if len(node_children) != len(pattern.children):
+        if len(node_children) != len(pattern.children):                         # Caso geral
             return None
         
         needs = []
@@ -78,6 +50,29 @@ class Selector:
                     return None
                 needs.extend(inner)
             else:
-                raise TypeError(f"especificação inválida: {spec!r}")
+                raise TypeError(f"Padrão de filho inválido: {spec!r}")
+        
         return needs
+    
+    def _visit(self, node, table):
+        """Pós-ordem: Resolve os filhos antes de avaliar as regras do nó"""
+        for child in children(node):
+            self._visit(child, table)
 
+        for rule in self.rules:
+            needs = self._match(rule.pattern, node)
+            if needs is None:
+                continue
+
+            total = rule.cost
+            
+            for subnode, result_class in needs:
+                sub_choice = table.lookup(subnode, result_class)
+                if sub_choice is None:
+                    break
+                total += sub_choice.cost
+            else:
+                current = table.lookup(node, rule.result)
+                if current is None or total < current.cost:
+                    table.put(node, rule.result, Choice(total, rule, tuple(needs)))
+                    
